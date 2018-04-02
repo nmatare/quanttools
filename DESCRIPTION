@@ -1,9 +1,10 @@
 Package: quanttools
 Title: Quantitative Tools for Financial Analysis
-Version: 0.0.0.9
+Version: 0.0.9
 Authors@R: person("Nathan", "Matare", email = "nathan.matare@gmail.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 Depends: R (>= 3.4.4)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.0.1
