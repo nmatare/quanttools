@@ -5,13 +5,7 @@
 #' @description 
 #' Computes the deflated sharpe ratio vis-a-vis Extreme Value Theory 
 #' 
-#'
 #' @details 
-#' The 'cscv' performs the CSCV algorithim as detailed by Bailey et al (2015) 
-#' The Probability of Backtest Overfitting. Given a true matrix 'M', cscv will 
-#' (1) split 'M' into 'S' number of sub-matrices, (2) form all sub-matrix
-#' combinations taken in groups of size S/2, and (3) perform CSCV given an 
-#' evaluation function, 'FUN'.
 #'
 #' @param N The total number of trials (parameters) attempted
 #' 
@@ -29,12 +23,9 @@
 #' 
 #' a list of class 'cscv' containing:
 #' \describe{  
-#' \item{pvalue:}{The cumulative distribution function over all 
-#'                            strategies.}
+#' \item{pvalue:}{The probability of rejecting the }
 #'
-#' \item{dsr:}{ The cumulative distribution function over 
-#'                            optimized(ranked) strategies.}
-#'
+#' \item{dsr:}{The deflated sharpe ratio}
 #'
 #' @references Bailey et al (2015) "The Deflated Sharpe Ratio: 
 #' Correcting for Selection Bias, Backtest Overfitting and Non-Normality" 
@@ -48,18 +39,17 @@
 #' @examples
 #' \dontrun{
 #'M               <- replicate(10, rnorm(1000, 0, 1))
-#'S               <- 6L # number of sub matrices
-#'trials          <- ncol(M) # number of models (parameters)
+#'trials          <- ncol(M) # number of trials (e.g., parameters attempted)
 #'observations    <- nrow(M) # number of observations (e.g., returns)
 #'evaluation.function <- sharpe.ratio <-
 #'    function(x, rf = 0.02 / 252) mean(x - rf) /  sd(x - rf)
 #'
-#'result          <- cscv(
-#'                      M           = M, 
-#'                      S           = S, 
-#'                      FUN         = evaluation.function, 
-#'                      parallel    = FALSE
+#' result <- dsr(
+#'      N=observations,
+#'      T=trials,
+#'      observed.sharpe=
 #' )
+
 #'result
 #'
 #' }
@@ -67,19 +57,8 @@
 
 dsr <- function(N, T, observed.sharpe, variance.sharpe, skew, kurtosis){
 
-    # Computes the probablistic sharpe ratio given extreme value theory and outputs
-    # the pvalue and associated deflated sharpe ratio
-    # observed.sharpe: the observed sharpe ratio calc'ed from observations(returns)
-    # variance.sharpe: the observed variance across sharpe ratios from trials
-    # skew:            the skew of observations(returns)
-    # kurtosis:        the kurtosis of observations(returns)
-    # N: number of trials (parameters)
-    # T: number of observations (returns)
-    # ** Note function does not take into account the periodicty of one's
-    # observed sharpe ratio
-
-    expected.sharpe = 0L 
-    # that is, the null hypothesis is that strategies are not better than 0
+    expected.sharpe = 0L # the null hypothesis is that strategies are not better than 0
+   
     .expected.max <- function(mu = 0, sigma = 1, N){
         # Given a sample of IID random variables, the expected maximum of that 
         # sample can be approximated for a large N as:
@@ -128,7 +107,7 @@ dsr <- function(N, T, observed.sharpe, variance.sharpe, skew, kurtosis){
     else 
         denominator <- sqrt(adj.skew + adj.kurt)
 
-     pvalue <- as.numeric(1L - pnorm(numerator / denominator))
+    pvalue <- as.numeric(1L - pnorm(numerator / denominator))
 
     # on expectation, our deflated sharpe ratio is the probabilty of observing 
     # the expectation 0L * (1 - prob), and the observed.sharpe * (prob)
