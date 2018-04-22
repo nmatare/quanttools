@@ -1,11 +1,11 @@
 #'
 #' @title 
-#' 'make bars'
+#' 'make_bars'
 #'
 #' @description 
-#' Creates 'bars' (also known as 'candlesticks') from raw tick data. 
-#' Users may specify either time, volume, unit, tick runs, tick imbalance
-#' volume imbalance, unit imbalance, or CUSUM bars.
+#' Creates financial time series 'bars' (also known as 'candlesticks') 
+#' from raw tick data. One may create either time, volume, unit, tick-runs, tick-imbalance (TIBs)
+#' volume-imbalance (VIBs), unit-imbalance (DIBs), or CUSUM-bars.
 #' 
 #' @details 
 #' 'make_bars' creates an OHLCV (Open/High/Low/Close/Volume) matrix of 
@@ -13,24 +13,30 @@
 #' with the following columns:
 #' 
 #'      timestamp:    ISO 4601 time of observation
+#' 
 #'      price:        the price of the transacted units
+#' 
 #'      size:         number of transacted units
+#' 
 #'      side:         a character vector of values either 'buy' or 'sell'
 #' 
 #' Type may be one of either time, volume, unit, tick runs, tick imbalance
 #' volume imbalance, unit imbalance, or CUSUM bars.
 #' 
 #' time:       sampled every 'by' units of time; 
-#'             must be a vector of length two corresponding to [units, interval];
+#'             must be a vector of length two, and corresponding to [units, interval];
 #'             for example, 'by=c(1, "days")' or 'by=c(1, "sec")'; default is c(1, "days")
+#' 
 #' tick:       sampled every 'by' number of ticks
+#' 
 #' volume:     sampled every 'by' units of volume 
+#' 
 #' unit:       sampled every 'by' units(dollars) of units (e.g., every $10,000)
 #' 
-#' 'tick runs', 'tick imbalance', 'volume imbalance', 'unit imbalance', and 'CUMSUM' are not yet supported
+#' *IMPORTANT* 'tick runs', 'tick imbalance', 'volume imbalance', 'unit imbalance', and 'CUMSUM' are not yet supported
 #'
 #' @param x     A matrix or data.frame of raw tick data. The object must contain
-#'              columns timestamp(ISO 4601), price(numeric), size(numeric), 
+#'              columns: timestamp(ISO 4601), price(numeric), size(numeric), 
 #'              and side(character). 
 #'
 #' @param type  One of either: time, volume, unit, tick runs, tick imbalance
@@ -38,7 +44,7 @@
 #'              information.
 #' 
 #' @param by    An integer (or in the case of type='time', an integer and interval) 
-#'              specifying the number sampling frequency. See details for further information.
+#'              specifying the sampling frequency. See details for further information.
 #'
 #' @return
 #' 
@@ -73,11 +79,11 @@ make_bars <- function(x, type, by=c(1, "days")){
         "tick runs", "tick imbalance", "volume imbalance", "unit imbalance",
         "CUSUM"))
 
-    if(all(c("timestamp", "size", "price", "side") %in% colnames(x)))
-        stop("You must supply a data.frame with columns: timestamp, price, size, and side")
+    if(!all(c("timestamp", "size", "price", "side") %in% colnames(x)))
+        stop("You must supply a data.frame or matrix with columns: timestamp, price, size, and side")
 
     # Transform into XTS
-    ticks <- xts(
+    ticks <- xts::xts(
         x=cbind(
             price=x[["price"]],
             size=x[["size"]],
@@ -143,8 +149,7 @@ make_bars <- function(x, type, by=c(1, "days")){
             if(!is.numeric(by))
                 stop("You must provide 'by' as the number of ticks to sample by")
 
-            # aggregate volume 
-            ticks_dd <- aggregate(ticks$size, by=index(ticks), FUN=sum)
+            ticks_dd <- aggregate(ticks$size, by=index(ticks), FUN=sum) # aggregate volume 
             ticks_dd <- merge.xts(
                 ticks_dd[ ,1L], # aggregated volume per duplicate times
                 ticks[!duplicated(index(ticks)) # attributes per ticks_dd's index
@@ -177,6 +182,7 @@ make_bars <- function(x, type, by=c(1, "days")){
 
             groups <- c.cumsum(as.numeric(ticks$price * ticks$size), threshold=by)
             eps <- which(!duplicated(names(groups))); eps[1L] <- 0L
+
             bars <- .create_bars( # create every 'by' number of units is traded
                 X=ticks, 
                 INDEX=eps

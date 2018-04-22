@@ -59,7 +59,7 @@ Performs combinatoral symmetric cross-validation
 given a true matrix 'M' and 'S' number of composite submatrices.
 }
 \details{
-The 'cscv' performs the CSCV algorithim as detailed by Bailey et al (2015) 
+'cscv' performs the CSCV algorithim as detailed by Bailey et al (2015) 
 The Probability of Backtest Overfitting. Given a true matrix 'M', cscv will 
 (1) split 'M' into 'S' number of sub-matrices, (2) form all sub-matrix
 combinations taken in groups of size S/2, and (3) perform CSCV given an 
