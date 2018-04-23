@@ -128,7 +128,7 @@ make_bars <- function(x, type, by=c(1, "days")){
         time={ # Time Bars
 
             if(length(by) != 2)
-                stop("You must specify 'by' as a vector of length two corresponding to [units, interval]")
+                stop("You must specify 'by' as a vector of length two, and corresponding to [units, interval]")
 
             choices <- c("us", "ms", "secs", "mins", "hours", # microseconds, milliseconds
                 "days", "weeks", "months","quarters", "years")
@@ -147,7 +147,7 @@ make_bars <- function(x, type, by=c(1, "days")){
         tick={ # Tick Bars
 
             if(!is.numeric(by))
-                stop("You must provide 'by' as the number of ticks to sample by")
+                stop("You must provide 'by' as the number of sampled ticks")
 
             ticks_dd <- aggregate(ticks$size, by=index(ticks), FUN=sum) # aggregate volume 
             ticks_dd <- merge.xts(
@@ -165,7 +165,7 @@ make_bars <- function(x, type, by=c(1, "days")){
         volume={ # Volume Bars 
 
             if(!is.numeric(by))
-                stop("You must provide 'by' as the number of ticks to sample by")
+                stop("You must provide 'by' as the amount of sampled volume")
 
             groups <- c.cumsum(as.numeric(ticks$size), threshold=by)
             eps <- which(!duplicated(names(groups))); eps[1L] <- 0L
@@ -178,7 +178,7 @@ make_bars <- function(x, type, by=c(1, "days")){
         unit={ # Unit(Dollar) Bars
 
             if(!is.numeric(by))
-                stop("You must provide 'by' as the number of ticks to sample by")
+                stop("You must provide 'by' as the number of sampled units")
 
             groups <- c.cumsum(as.numeric(ticks$price * ticks$size), threshold=by)
             eps <- which(!duplicated(names(groups))); eps[1L] <- 0L

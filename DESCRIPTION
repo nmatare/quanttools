@@ -3,7 +3,7 @@ Title: Quantitative Tools for Financial Analysis
 Version: 0.0.9
 Authors@R: person("Nathan", "Matare", email = "nathan.matare@gmail.com", role = c("aut", "cre"))
 Description: Various tools for cleaning, analysing, and visualising financial data
-Depends: R (>= 3.4.4)
+Depends: R (>= 3.4.0)
 License: MIT
 Encoding: UTF-8
 LazyData: true
