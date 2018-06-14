@@ -1,6 +1,6 @@
 #'
 #' @title 
-#' Defalted Sharpe Ratio (DSR)
+#' Deflated Sharpe Ratio (DSR)
 #'
 #' @description 
 #' Computes the deflated sharpe ratio vis-a-vis Extreme Value Theory 
@@ -57,9 +57,9 @@
 
 dsr <- function(N, T, observed.sharpe, variance.sharpe, skew, kurtosis){
 
-    expected.sharpe = 0L # the null hypothesis is that strategies are not better than 0
+    expected.sharpe=0L # the null hypothesis that strategies are not better than 0
    
-    .expected.max <- function(mu = 0, sigma = 1, N){
+    .expected.max <- function(mu=0, sigma =1, N){
         # Given a sample of IID random variables, the expected maximum of that 
         # sample can be approximated for a large N as:
         # *Extreme Value Theory 
@@ -87,12 +87,7 @@ dsr <- function(N, T, observed.sharpe, variance.sharpe, skew, kurtosis){
         return(mu + sigma * max.n)
     }
 
-    null.sharpe <- try(.expected.max(
-        mu      = expected.sharpe, 
-        sigma   = variance.sharpe, 
-        N       = N
-    ), silent = TRUE)
-
+    null.sharpe <- try(.expected.max(mu=expected.sharpe, sigma=variance.sharpe, N=N))
     if(inherits(null.sharpe, "try-error") || T == 0 || is.na(observed.sharpe)) 
         return(list(pvalue = NA_real_, dsr = NA_real_))
 
@@ -109,12 +104,10 @@ dsr <- function(N, T, observed.sharpe, variance.sharpe, skew, kurtosis){
 
     pvalue <- as.numeric(1L - pnorm(numerator / denominator))
 
-    # on expectation, our deflated sharpe ratio is the probabilty of observing 
+    # on expectation, our deflated sharpe ratio is the probability of observing 
     # the expectation 0L * (1 - prob), and the observed.sharpe * (prob)
     deflated.sharpe <-  as.numeric(
         (pnorm(numerator / denominator) * observed.sharpe) + 
-        (pvalue * expected.sharpe)
-    )
-
+        (pvalue * expected.sharpe))
     return(list(pvalue = pvalue, dsr = deflated.sharpe))    
 }

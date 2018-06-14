@@ -24,7 +24,7 @@ FUN = function(x, rf = 0.02 / 252) mean(x - rf) /  sd(x - rf)).}
 \item{relax}{In the original implementation, Bailey et al (2015) 
     restrict 'S' to evenly divide 'M'. If relax is set to TRUE, one 
 can choose an 'S' that does not evenly divide M while ensuring 
-that the left-over splits are appropiately distributed among
+that the left-over splits are appropriately distributed among
 the training sets J and testing sets Jbar.}
 }
 \value{
@@ -47,7 +47,7 @@ a list of class 'cscv' containing:
                            probability that the model selected as optimal IS
                            will deliver a loss OOS.}
 
-\item{num_submatrices:}{   The number of formed submatrices.}
+\item{num_submatrices:}{   The number of formed sub-matrices.}
 
 \item{beta:}{              The slope of IS to OOS performance degradation.}
 
@@ -55,12 +55,12 @@ a list of class 'cscv' containing:
 }
 }
 \description{
-Performs combinatoral symmetric cross-validation 
-given a true matrix 'M' and 'S' number of composite submatrices.
+Performs combinatorial symmetric cross-validation 
+given a true matrix 'M' and 'S' number of composite sub-matrices.
 }
 \details{
 'cscv' performs the CSCV algorithim as detailed by Bailey et al (2015) 
-The Probability of Backtest Overfitting. Given a true matrix 'M', cscv will 
+The Probability of Backtest Over-fitting. Given a true matrix 'M', cscv will 
 (1) split 'M' into 'S' number of sub-matrices, (2) form all sub-matrix
 combinations taken in groups of size S/2, and (3) perform CSCV given an 
 evaluation function, 'FUN'.

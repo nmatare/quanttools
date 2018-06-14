@@ -3,12 +3,12 @@
 #' Combinatorially Symmetric Cross-validation (CSCV)
 #'
 #' @description 
-#' Performs combinatoral symmetric cross-validation 
-#' given a true matrix 'M' and 'S' number of composite submatrices.
+#' Performs combinatorial symmetric cross-validation 
+#' given a true matrix 'M' and 'S' number of composite sub-matrices.
 #'
 #' @details 
 #' 'cscv' performs the CSCV algorithim as detailed by Bailey et al (2015) 
-#' The Probability of Backtest Overfitting. Given a true matrix 'M', cscv will 
+#' The Probability of Backtest Over-fitting. Given a true matrix 'M', cscv will 
 #' (1) split 'M' into 'S' number of sub-matrices, (2) form all sub-matrix
 #' combinations taken in groups of size S/2, and (3) perform CSCV given an 
 #' evaluation function, 'FUN'.
@@ -17,7 +17,7 @@
 #' 			(i.e., corresponding model parameters), and rows are the number 
 #'			of observations (e.g., returns).
 #'
-#' @param S An even number corresponding to the number of 'M' submatrices to
+#' @param S An even number corresponding to the number of 'M' sub-matrices to
 #' 			be formed for the training(J) and testing(Jbar) sets; default 16. 
 #'
 #' @param FUN 	A function that evaluates a vector of observations (e.g., 
@@ -30,7 +30,7 @@
 #' @param relax In the original implementation, Bailey et al (2015) 
 #' 				restrict 'S' to evenly divide 'M'. If relax is set to TRUE, one 
 #'				can choose an 'S' that does not evenly divide M while ensuring 
-#'				that the left-over splits are appropiately distributed among
+#'				that the left-over splits are appropriately distributed among
 #'				the training sets J and testing sets Jbar.
 #'
 #' @return
@@ -54,7 +54,7 @@
 #'                            probability that the model selected as optimal IS
 #'                            will deliver a loss OOS.}
 #'
-#' \item{num_submatrices:}{   The number of formed submatrices.}
+#' \item{num_submatrices:}{   The number of formed sub-matrices.}
 #'
 #' \item{beta:}{              The slope of IS to OOS performance degradation.}
 #'
@@ -104,19 +104,21 @@ cscv <- function(M, S = 16, FUN, digits = 3L, parallel = FALSE, relax = TRUE){
     S <- as.integer(S)
 
     stopifnot(S %% 2 == 0) # (2) S must be even 
-    if(!relax)
-        stopifnot(T %% S == 0) # (2) S of disjoint submatrices of equal dimensions 
+    if(!relax) # (2) S of disjoint sub-matrices of equal dimensions 
+        stopifnot(T %% S == 0) 
 
     if(!T > 2 * N) 
         warning(
-            "Bailey (2015) et al suggest that T (observations) should be 2x the 
-             number of parameters (N), due to the fact that CSCV compares 
-             combinations of T/2 trials to their complements.")
+            "Bailey (2015) et al suggest that T (observations) \n",
+            "should be 2x the number of parameters (N), due to \n",
+            "the fact that CSCV compares combinations of T/2 \n",
+            "trials to their complements."
+        )
 
     if(hasArg(parallel) && parallel && parallel::detectCores() != 1)
-        `%PROC%` <- foreach::`%dopar%`
+        `%proc%` <- foreach::`%dopar%`
     else 
-        `%PROC%` <- foreach::`%do%`
+        `%proc%` <- foreach::`%do%`
 
     # (2) partition M across rows 
     groups  <- rep(1:S, times = rep(T / S, S)) # distribute residuals 
@@ -170,7 +172,7 @@ cscv <- function(M, S = 16, FUN, digits = 3L, parallel = FALSE, relax = TRUE){
         omegabar <- rbar[Nstar] / (N + 1) # note +1
 
         # (4g) We define the logit λ c = ln (1−ω)
-        lambda <- log(omegabar / (1 - omegabar)) # high lambda == low overfit
+        lambda <- log(omegabar / (1 - omegabar)) # high lambda == low over-fit
 
         # return values
         result <- list(
@@ -183,7 +185,6 @@ cscv <- function(M, S = 16, FUN, digits = 3L, parallel = FALSE, relax = TRUE){
     }
     
     # (5) compute the distribution of ranks OOS
-    rm(combos) # no longer needed
     pairs <- t(sapply(results, function(x) 
         c(x$R[[x$Nstar]], x$Rbar[[x$Nstar]], x$lambda)))
     colnames(pairs) <- c("R", "Rbar", "lambda") 
@@ -192,17 +193,16 @@ cscv <- function(M, S = 16, FUN, digits = 3L, parallel = FALSE, relax = TRUE){
     # appropiate pair
     data    <- pairs[is.finite(rowSums(pairs)), ]
     if(length(data) == 0)
-        stop("Algorithim could not correctly rank appropiate pairs; change 'FUN'
+        stop("Algorithm could not correctly rank appropriate pairs; change 'FUN'
              or increase/decrease 'S'")
 
     # compute distributions
-    # It can be verified visually by checking that the cumaltive distrubtion 
+    # It can be verified visually by checking that the cumulative distribution 
     # function of RbarR is not above the cumdist function of R for all outcomes
     # (worse); one would prefer the criterion used to produce RbarR vs random
     # sampling of Rbar
     distRbarR <- ecdf(pairs[,"Rbar"]) # optimized
     distRbar  <- ecdf(do.call(rbind, lapply(results, function(x) x$Rbar)))
-    rm(results) # no longer needed     
 
     # (5) Define relative frequency
     rel_freq <- sum(as.integer(pairs[ ,"lambda"] <= 0L)) 
@@ -248,7 +248,7 @@ cscv <- function(M, S = 16, FUN, digits = 3L, parallel = FALSE, relax = TRUE){
 #'      et al (2015);
 #' (2)  the out-of-sample performance degradation when compared to in-sample
 #'      results given a previously defined evaluation function; 
-#' (3)  the first and second order plots of stohastic domaince present among the
+#' (3)  the first and second order plots of stochastic dominance present among the
 #'      attempted trials.
 #'
 #' The legend includes the attributed 'phi' and 'beta' which

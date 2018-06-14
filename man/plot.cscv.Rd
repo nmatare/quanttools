@@ -10,7 +10,7 @@ cscv.plot() will return:
      et al (2015);
 (2)  the out-of-sample performance degradation when compared to in-sample
      results given a previously defined evaluation function; 
-(3)  the first and second order plots of stohastic domaince present among the
+(3)  the first and second order plots of stochastic dominance present among the
      attempted trials.}
 \usage{
 \method{plot}{cscv}(cscv.objects, summarize = 50)
