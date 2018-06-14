@@ -11,7 +11,7 @@ make_bars(x, type, by = c(1, "days"))
 columns: timestamp(ISO 4601), price(numeric), size(numeric), 
 and side(character).}
 
-\item{type}{One of either: time, volume, unit, tick runs, tick imbalance
+\item{type}{One of either: time, volume, unit, tick, tick runs, tick imbalance
 volume imbalance, unit imbalance, or CUSUM bars. See details for further 
 information.}
 
@@ -20,15 +20,16 @@ specifying the sampling frequency. See details for further information.}
 }
 \description{
 Creates financial time series 'bars' (also known as 'candlesticks') 
-from raw tick data. One may create either time, volume, unit, tick-runs, tick-imbalance (TIBs)
-volume-imbalance (VIBs), unit-imbalance (DIBs), or CUSUM-bars.
+from raw tick data. One may create either time, volume, unit, tick, 
+tick-runs, tick-imbalance (TIBs) volume-imbalance (VIBs), 
+unit-imbalance (DIBs), or CUSUM-bars.
 }
 \details{
 'make_bars' creates an OHLCV (Open/High/Low/Close/Volume) matrix of 
 class 'xts' The function requires an input of class 'data.frame' or 'matrix' 
 with the following columns:
 
-     timestamp:    ISO 4601 time of observation
+     timestamp:    ISO 8601 time of observation
 
      price:        the price of the transacted units
 
@@ -49,7 +50,7 @@ volume:     sampled every 'by' units of volume
 
 unit:       sampled every 'by' units(dollars) of units (e.g., every $10,000)
 
-*IMPORTANT* 'tick runs', 'tick imbalance', 'volume imbalance', 'unit imbalance', and 'CUMSUM' are not yet supported
+*NOTE* 'tick runs', 'tick imbalance', 'volume imbalance', 'unit imbalance', and 'CUMSUM' are not yet supported
 }
 \examples{
 \dontrun{

@@ -11,7 +11,7 @@ cscv(M, S = 16, FUN, digits = 3L, parallel = FALSE, relax = TRUE)
     (i.e., corresponding model parameters), and rows are the number 
 of observations (e.g., returns).}
 
-\item{S}{An even number corresponding to the number of 'M' submatrices to
+\item{S}{An even number corresponding to the number of 'M' sub-matrices to
 be formed for the training(J) and testing(Jbar) sets; default 16.}
 
 \item{FUN}{A function that evaluates a vector of observations (e.g., 

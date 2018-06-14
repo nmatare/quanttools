@@ -4,15 +4,16 @@
 #'
 #' @description 
 #' Creates financial time series 'bars' (also known as 'candlesticks') 
-#' from raw tick data. One may create either time, volume, unit, tick-runs, tick-imbalance (TIBs)
-#' volume-imbalance (VIBs), unit-imbalance (DIBs), or CUSUM-bars.
+#' from raw tick data. One may create either time, volume, unit, tick, 
+#' tick-runs, tick-imbalance (TIBs) volume-imbalance (VIBs), 
+#' unit-imbalance (DIBs), or CUSUM-bars.
 #' 
 #' @details 
 #' 'make_bars' creates an OHLCV (Open/High/Low/Close/Volume) matrix of 
 #' class 'xts' The function requires an input of class 'data.frame' or 'matrix' 
 #' with the following columns:
 #' 
-#'      timestamp:    ISO 4601 time of observation
+#'      timestamp:    ISO 8601 time of observation
 #' 
 #'      price:        the price of the transacted units
 #' 
@@ -33,13 +34,13 @@
 #' 
 #' unit:       sampled every 'by' units(dollars) of units (e.g., every $10,000)
 #' 
-#' *IMPORTANT* 'tick runs', 'tick imbalance', 'volume imbalance', 'unit imbalance', and 'CUMSUM' are not yet supported
+#' *NOTE* 'tick runs', 'tick imbalance', 'volume imbalance', 'unit imbalance', and 'CUMSUM' are not yet supported
 #'
 #' @param x     A matrix or data.frame of raw tick data. The object must contain
 #'              columns: timestamp(ISO 4601), price(numeric), size(numeric), 
 #'              and side(character). 
 #'
-#' @param type  One of either: time, volume, unit, tick runs, tick imbalance
+#' @param type  One of either: time, volume, unit, tick, tick runs, tick imbalance
 #'              volume imbalance, unit imbalance, or CUSUM bars. See details for further 
 #'              information.
 #' 
@@ -105,24 +106,6 @@ make_bars <- function(x, type, by=c(1, "days")){
         return(bars)
     }
 
-    c.cumsum <- function(x, threshold){
-        # TO DO, turn in Rcpp code
-        stopifnot(is.numeric(x))
-        runsum=0L
-        group=1L
-        result=numeric()
-
-        for(i in seq(x)){
-            runsum=runsum+x[i]
-            if(runsum > threshold){ # reset
-                runsum=x[i]
-                group=group+1L
-            }
-            result=c(result, structure(runsum, names=group))
-        }
-        return(result)
-    }
-
     # Sample 
     bars <- switch(type,
         time={ # Time Bars
@@ -167,7 +150,7 @@ make_bars <- function(x, type, by=c(1, "days")){
             if(!is.numeric(by))
                 stop("You must provide 'by' as the amount of sampled volume")
 
-            groups <- c.cumsum(as.numeric(ticks$size), threshold=by)
+            groups <- cumsum_reset(as.numeric(ticks$size), threshold=by)
             eps <- which(!duplicated(names(groups))); eps[1L] <- 0L
 
             bars <- .create_bars( # create every 'by' number of order size    
@@ -180,7 +163,7 @@ make_bars <- function(x, type, by=c(1, "days")){
             if(!is.numeric(by))
                 stop("You must provide 'by' as the number of sampled units")
 
-            groups <- c.cumsum(as.numeric(ticks$price * ticks$size), threshold=by)
+            groups <- cumsum_reset(as.numeric(ticks$price * ticks$size), threshold=by)
             eps <- which(!duplicated(names(groups))); eps[1L] <- 0L
 
             bars <- .create_bars( # create every 'by' number of units is traded

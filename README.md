@@ -1,11 +1,11 @@
 # quanttools
 Quantitative Tools for Financial Analysis
 
-* Version 0.0.9
+* Version 0.0.91
 
 ## Description
 
-
+Development Status :: 2 - Pre-Alpha
 
 ## Features
 
@@ -16,7 +16,32 @@ library(devtools)
 devtools::install_github("nmatare/quanttools")
 ```
 
-## Usage
+## Included Functions
+
+### Data Manipulation
+
+#### 'make_bars'
+
+```R
+make_bars()
+```
+
+### Analysis
+
+#### 'cscv'
+
+```R
+
+```
+
+#### 'dsharpe'
+
+
+### Visualization
+
+```R
+
+```
 
 
 Author(s)

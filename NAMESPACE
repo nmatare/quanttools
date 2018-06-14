@@ -2,5 +2,6 @@
 
 S3method(plot,cscv)
 export(cscv)
+export(cumsum_reset)
 export(dsr)
 export(make_bars)
