@@ -31,16 +31,16 @@ make_bars()
 #### 'cscv'
 
 ```R
-
+cscv()
 ```
 
-#### 'dsharpe'
+#### 'dsr'
 
 
 ### Visualization
 
 ```R
-
+dsr()
 ```
 
 
