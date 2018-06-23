@@ -14,8 +14,9 @@ Imports:
     xts (>= 0.1),
     zoo (>= 1.8),
     data.table (>= 1.11.4),
-    Rcpp
+    Rcpp (>= 0.12.16)
 Suggests:
 	Rcpp (>= 0.12.16)
 LinkingTo: 
-    Rcpp
+    Rcpp (>= 0.12.16)
+

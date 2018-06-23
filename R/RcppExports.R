@@ -5,12 +5,11 @@
 #'   numeric vector. The argument 'threshold' controls the max/min 
 #'   ceiling/floor of the running sum before it is reset; i.e., if the 
 #'   threshold is set to (+/-) Inf, one would, essentially, compute the base R 
-#'   cumsum', albeit slower
+#'   'cumsum', albeit much slower
 #' 
 #' @param x          A numeric vector
 #' @param threshold  A numeric scalar specifying the cumulative 
 #'                   threshold(reset)
-#' @export
 cumsum_reset <- function(x, threshold) {
     .Call('_quanttools_cumsum_reset', PACKAGE = 'quanttools', x, threshold)
 }

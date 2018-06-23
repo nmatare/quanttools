@@ -35,7 +35,7 @@ with the following columns:
 
      size:         number of transacted units
 
-     side:         a character vector of values either 'buy' or 'sell'
+     side:         an integer vector of 1L(buy) or -1L(sell)
 
 Type may be one of either time, volume, unit, tick runs, tick imbalance
 volume imbalance, unit imbalance, or CUSUM bars.
@@ -58,7 +58,7 @@ df <- data.frame(
  timestamp=seq(from = as.POSIXct("2018-01-21"), length.out = 100, by = "secs"),
  price=rnorm(100,65,5),
  size=rnorm(100,10,1),
- side=rep(c("buy", 'sell'), 50)
+ side=rep(c(1L, -1L), 50)
 )
 
 result <- make_bars(x=df,type='time', by=c(5, "mins"))

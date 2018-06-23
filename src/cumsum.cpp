@@ -11,7 +11,6 @@ using namespace Rcpp;
 //' @param x          A numeric vector
 //' @param threshold  A numeric scalar specifying the cumulative 
 //'                   threshold(reset)
-//' @export
 // [[Rcpp::export]]
 std::vector<double> cumsum_reset(NumericVector x, double threshold){
 
