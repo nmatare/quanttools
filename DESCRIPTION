@@ -1,8 +1,10 @@
 Package: quanttools
 Title: Quantitative Tools for Financial Analysis
 Version: 0.0.91
-Authors@R: person("Nathan", "Matare", email = "nathan.matare@chicagobooth.com", role = c("aut", "cre"))
-Description: Tools for cleaning, analyzing, and visualizing financial data
+Authors@R: person("Nathan", "Matare", email = "nathan.matare@chicagobooth.com", 
+	role = c("aut", "cre"))
+Description: Tools for cleaning, manipulating, analyzing, and visualizing 
+	financial time-series data
 Depends: R (>= 3.4.0)
 License: MIT
 Encoding: UTF-8
@@ -11,7 +13,7 @@ RoxygenNote: 6.0.1
 Imports: 
     xts (>= 0.1),
     zoo (>= 1.8),
-    data.table (>= 1.11.4)
+    data.table (>= 1.11.4),
     Rcpp
 Suggests:
 	Rcpp (>= 0.12.16)
