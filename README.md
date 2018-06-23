@@ -34,14 +34,15 @@ make_bars()
 cscv()
 ```
 
+```R
+dsr()
+```
+
 #### 'dsr'
 
 
 ### Visualization
 
-```R
-dsr()
-```
 
 
 Author(s)
