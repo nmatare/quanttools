@@ -11,18 +11,28 @@ using namespace Rcpp;
 //' @param x          A numeric vector
 //' @param threshold  A numeric scalar specifying the cumulative 
 //'                   threshold(reset)
+//'
+//' @return           A named numeric vector whose names correspond to the 
+//'                   group of summed values before the specified threshold
 // [[Rcpp::export]]
-std::vector<double> cumsum_reset(NumericVector x, double threshold){
+Rcpp::NumericVector cumsum_reset(Rcpp::NumericVector x, double threshold){
 
-  int n = x.size();
+  int group = 0; 
   double runsum = 0;
-  std::vector<double> out;
+  Rcpp::NumericVector value;
+  std::vector<int> groups;
 
-  for(int i = 0; i < n; i++){
+  for(int i = 0; i < x.size(); i++){
     runsum += x[i];
-    if(runsum > threshold)
+    if(runsum > threshold){
       runsum = x[i];
-    out.push_back(runsum);
+      group += 1;
+    }
+    groups.push_back(group);
+    value.push_back(runsum);
   }
-  return out;
+  value.attr("names") = groups;
+  return value;
 }
+
+

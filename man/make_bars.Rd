@@ -7,20 +7,21 @@
 make_bars(x, type, by = c(1, "days"))
 }
 \arguments{
-\item{x}{A matrix or data.frame of raw tick data. The object must contain
-columns: timestamp(ISO 4601), price(numeric), size(numeric), 
+\item{x}{A data.frame of raw tick data. The object must contain
+columns: timestamp(POSIXct), price(numeric), size(numeric), 
 and side(character).}
 
-\item{type}{One of either: time, volume, unit, tick, tick runs, tick imbalance
-volume imbalance, unit imbalance, or CUSUM bars. See details for further 
-information.}
+\item{type}{One of either: time, volume, unit, tick, tick runs, tick 
+imbalance volume imbalance, unit imbalance, or CUSUM bars. 
+See details for further information.}
 
-\item{by}{An integer (or in the case of type='time', an integer and interval) 
-specifying the sampling frequency. See details for further information.}
+\item{by}{An integer (or in the case of type='time', an integer 
+and interval) specifying the sampling frequency. 
+See details for further information.}
 }
 \description{
 Creates financial time series 'bars' (also known as 'candlesticks') 
-from raw tick data. One may create either time, volume, unit, tick, 
+from raw trade data. One may create either time, volume, unit, tick, 
 tick-runs, tick-imbalance (TIBs) volume-imbalance (VIBs), 
 unit-imbalance (DIBs), or CUSUM-bars.
 }
@@ -29,7 +30,7 @@ unit-imbalance (DIBs), or CUSUM-bars.
 class 'xts' The function requires an input of class 'data.frame' or 'matrix' 
 with the following columns:
 
-     timestamp:    ISO 8601 time of observation
+     timestamp:    time of observation; will be used as the xts index 
 
      price:        the price of the transacted units
 
@@ -41,8 +42,10 @@ Type may be one of either time, volume, unit, tick runs, tick imbalance
 volume imbalance, unit imbalance, or CUSUM bars.
 
 time:       sampled every 'by' units of time; 
-            must be a vector of length two, and corresponding to [units, interval];
-            for example, 'by=c(1, "days")' or 'by=c(1, "sec")'; default is c(1, "days")
+            must be a vector of length two, and corresponding to 
+            [units, interval];
+            for example, 'by=c(1, "days")' or 'by=c(1, "sec")'; 
+            default is c(1, "days")
 
 tick:       sampled every 'by' number of ticks
 
@@ -50,24 +53,27 @@ volume:     sampled every 'by' units of volume
 
 unit:       sampled every 'by' units(dollars) of units (e.g., every $10,000)
 
-*NOTE* 'tick runs', 'tick imbalance', 'volume imbalance', 'unit imbalance', and 'CUMSUM' are not yet supported
+*NOTE* 'tick runs', 'tick imbalance', 'volume imbalance', 'unit imbalance', 
+and 'CUMSUM' are not yet supported
 }
 \examples{
 \dontrun{
 df <- data.frame(
- timestamp=seq(from = as.POSIXct("2018-01-21"), length.out = 100, by = "secs"),
+ timestamp=seq(from = as.POSIXct("2018-01-21"), 
+               length.out = 100, by = "secs"),
  price=rnorm(100,65,5),
  size=rnorm(100,10,1),
  side=rep(c(1L, -1L), 50)
 )
 
-result <- make_bars(x=df,type='time', by=c(5, "mins"))
+result <- make_bars(x=df, type='time', by=c(5, "mins"))
 result
 
 }
 }
 \references{
-Lopez de Prado, Marcos, Advances in Financial Machine Learning (2018)
+Lopez de Prado, Marcos, Advances in Financial Machine 
+             Learning (2018)
 }
 \author{
 Nathan Matare <email: nmatare@chicagobooth.com>

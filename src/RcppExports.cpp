@@ -6,12 +6,12 @@
 using namespace Rcpp;
 
 // cumsum_reset
-std::vector<double> cumsum_reset(NumericVector x, double threshold);
+Rcpp::NumericVector cumsum_reset(Rcpp::NumericVector x, double threshold);
 RcppExport SEXP _quanttools_cumsum_reset(SEXP xSEXP, SEXP thresholdSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
     rcpp_result_gen = Rcpp::wrap(cumsum_reset(x, threshold));
     return rcpp_result_gen;

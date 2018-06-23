@@ -10,6 +10,9 @@
 #' @param x          A numeric vector
 #' @param threshold  A numeric scalar specifying the cumulative 
 #'                   threshold(reset)
+#'
+#' @return           A named numeric vector whose names correspond to the 
+#'                   group of summed values before the specified threshold
 cumsum_reset <- function(x, threshold) {
     .Call('_quanttools_cumsum_reset', PACKAGE = 'quanttools', x, threshold)
 }

@@ -16,6 +16,10 @@ cumsum_reset(x, threshold)
 \item{threshold}{A numeric scalar specifying the cumulative 
 threshold(reset)}
 }
+\value{
+A named numeric vector whose names correspond to the 
+                  group of summed values before the specified threshold
+}
 \description{
 Returns a vector whose elements are the cumulative sums of the inputted
   numeric vector. The argument 'threshold' controls the max/min 

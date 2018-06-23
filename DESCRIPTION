@@ -1,6 +1,6 @@
 Package: quanttools
 Title: Quantitative Tools for Financial Analysis
-Version: 0.0.91
+Version: 0.0.92
 Authors@R: person("Nathan", "Matare", email = "nathan.matare@chicagobooth.com", 
 	role = c("aut", "cre"))
 Description: Tools for cleaning, manipulating, analyzing, and visualizing 
