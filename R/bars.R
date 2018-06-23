@@ -94,7 +94,7 @@ make_bars <- function(x, type, by=c(1, "days")){
         x=cbind(
             price=x[["price"]],
             size=x[["size"]],
-            side=x[['side']])
+            side=x[['side']]
         ),
         order.by=x[["timestamp"]]
     )
