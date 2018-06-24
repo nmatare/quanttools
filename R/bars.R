@@ -85,18 +85,21 @@ make_bars <- function(x, type, by=c(1, "days")){
         "tick runs", "tick imbalance", "volume imbalance", "unit imbalance",
         "CUSUM"))
 
+    if(!inherits(x, 'data.frame'))
+        stop("You must 'x' as a data.frame containing the raw trade data")
+
     if(!all(c("timestamp", "size", "price", "side") %in% colnames(x)))
-        stop("You must supply a data.frame or matrix with columns: 
-             timestamp, price, size, and side")
+        stop("You must supply a data.frame with columns: 
+              timestamp, price, size, and side")
 
-    if(!(x[ ,'side'] == 1L || x[ ,'side'] == -1L))
+    if(!(x[['side']] == 1L || x[['side']] == -1L))
         stop("You must supply 'side' as an integer 
-             vector of 1L(buy) or -1L(sell)")
+              vector of 1L(buy) or -1L(sell)")
 
-    if(!is.double(x[ ,'size']))
+    if(!is.double(x[['size']]))
         stop("You must give the 'size' as a numeric vector")
 
-    if(!is.double(x[ ,'price']))
+    if(!is.double(x[['price']]))
         stop("You must give the 'price' as a numeric vector")
 
     # Transform into XTS
@@ -126,10 +129,9 @@ make_bars <- function(x, type, by=c(1, "days")){
 
             if(is.double(by[1]))
                 stop("The first element in the vector must be of 
-                     type 'numeric'")
+                      type 'numeric'")
 
-            # create by 'by' units of time
-            bars <- .create_bars( 
+            bars <- .create_bars( # create by 'by' units of time
                 X=ticks, 
                 INDEX=xts::endpoints(x=ticks, on=by[2], k=by[1])
             )          
@@ -177,7 +179,7 @@ make_bars <- function(x, type, by=c(1, "days")){
             # create every 'by' number of units is traded
             bars <- .create_bars(X=ticks, INDEX=eps) 
         }
-        # TO DO
+        # @TODO
         # CUSUM Bars
         # Tick Imbalance Bars
         # Tick Runs Bars
