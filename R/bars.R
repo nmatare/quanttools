@@ -109,20 +109,6 @@ make_bars <- function(x, type, by=c(1, "days")){
         order.by=x[["timestamp"]]
     )
 
-    .create_bars <- function(X, INDEX){
-
-        bars <- xts::period.apply(
-            x=X,
-            INDEX=INDEX,
-            FUN=function(x){
-                ticks=zoo::coredata(x$price)
-                c(xts::first(ticks), max(ticks), 
-                  min(ticks), xts::last(ticks), sum(x$size))
-            }
-        ) 
-        return(bars)
-    }
-
     # Sample 
     bars <- switch(type,
         time={ # Time Bars
@@ -142,7 +128,8 @@ make_bars <- function(x, type, by=c(1, "days")){
                 stop("The first element in the vector must be of 
                      type 'numeric'")
 
-            bars <- .create_bars( # create by 'by' units of time
+            # create by 'by' units of time
+            bars <- .create_bars( 
                 X=ticks, 
                 INDEX=xts::endpoints(x=ticks, on=by[2], k=by[1])
             )          
@@ -162,17 +149,15 @@ make_bars <- function(x, type, by=c(1, "days")){
                 )
             colnames(ticks_dd) <- c("size", "price", "side")
 
-            bars <- .create_bars( # create every 'by' number of ticks
-                X=ticks_dd, 
-                INDEX=seq(1L, nrow(ticks_dd), by)
-            )     
+            # create every 'by' number of ticks
+            bars <- .create_bars(X=ticks_dd, INDEX=seq(1L, nrow(ticks_dd), by))     
         },
         volume={ # Volume Bars 
 
             if(!is.double(by))
                 stop("You must provide 'by' as the amount of sampled volume")
 
-            # @TODO, perhaps this would be faster with a binary search tree?
+            # @TODO, perhaps this would be faster via a binary search tree?
             csummed <- cumsum_reset(ticks$size, threshold=by)
             eps <- which(!duplicated(names(csummed)))
             eps[1L] <- 0L
@@ -201,5 +186,22 @@ make_bars <- function(x, type, by=c(1, "days")){
     )
 
     colnames(bars) <- c('Open', 'High', 'Low', 'Close', 'Volume')
+    return(bars)
+}
+
+#' @param X      trade data to construct bars
+#' @param INDEX  numeric vector specifying indexing
+#' @export
+.create_bars <- function(X, INDEX){
+
+    bars <- xts::period.apply(
+        x=X,
+        INDEX=INDEX,
+        FUN=function(x){
+            ticks=zoo::coredata(x$price)
+            c(xts::first(ticks), max(ticks), 
+              min(ticks), xts::last(ticks), sum(x$size))
+        }
+    ) 
     return(bars)
 }

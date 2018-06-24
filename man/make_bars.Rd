@@ -20,8 +20,8 @@ and interval) specifying the sampling frequency.
 See details for further information.}
 }
 \description{
-Creates financial time series 'bars' (also known as 'candlesticks') 
-from raw trade data. One may create either time, volume, unit, tick, 
+Creates financial 'bars' (also known as 'candlesticks') 
+from raw trade data. One may construct either time, volume, unit, tick, 
 tick-runs, tick-imbalance (TIBs) volume-imbalance (VIBs), 
 unit-imbalance (DIBs), or CUSUM-bars.
 }
@@ -43,9 +43,8 @@ volume imbalance, unit imbalance, or CUSUM bars.
 
 time:       sampled every 'by' units of time; 
             must be a vector of length two, and corresponding to 
-            [units, interval];
-            for example, 'by=c(1, "days")' or 'by=c(1, "sec")'; 
-            default is c(1, "days")
+            [units, interval]; for example, 'by=c(1, "days")' or 
+            'by=c(1, "secs")'. Default is c(1, "days")
 
 tick:       sampled every 'by' number of ticks
 
