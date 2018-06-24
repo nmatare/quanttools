@@ -10,7 +10,7 @@
 #' 
 #' @details 
 #' 'make_bars' creates an OHLCV (Open/High/Low/Close/Volume) matrix of 
-#' class 'xts' The function requires an input of class 'data.frame' or 'matrix' 
+#' class 'xts' The function requires an input of class 'data.frame'
 #' with the following columns:
 #' 
 #'      timestamp:    time of observation; will be used as the xts index 
@@ -25,9 +25,10 @@
 #' volume imbalance, unit imbalance, or CUSUM bars.
 #' 
 #' time:       sampled every 'by' units of time; 
-#'             must be a vector of length two, and corresponding to 
-#'             [units, interval]; for example, 'by=c(1, "days")' or 
-#'             'by=c(1, "secs")'. Default is c(1, "days")
+#'             must be a vector of length two corresponding to 
+#'             [units, interval]. For example, 'by=c(1, "days")' or 
+#'             'by=c(5, "mins") to construct daily or 5-min bars, 
+#'             respectively.'
 #' 
 #' tick:       sampled every 'by' number of ticks
 #' 
@@ -38,7 +39,7 @@
 #' *NOTE* 'tick runs', 'tick imbalance', 'volume imbalance', 'unit imbalance', 
 #' and 'CUMSUM' are not yet supported
 #'
-#' @param x     A data.frame of raw tick data. The object must contain
+#' @param x     A data.frame of raw trade data. The object must contain
 #'              columns: timestamp(POSIXct), price(numeric), size(numeric), 
 #'              and side(character). 
 #'
@@ -66,6 +67,7 @@
 #'
 #' @examples
 #' \dontrun{
+#'
 #' df <- data.frame(
 #'  timestamp=seq(from = as.POSIXct("2018-01-21"), 
 #'                length.out = 100, by = "secs"),
@@ -79,7 +81,7 @@
 #'
 #' }
 #' @export
-make_bars <- function(x, type, by=c(1, "days")){
+make_bars <- function(x, type, by){
 
     type <- match.arg(type, c("time", "tick", "volume", "unit", 
         "tick runs", "tick imbalance", "volume imbalance", "unit imbalance",
@@ -103,7 +105,7 @@ make_bars <- function(x, type, by=c(1, "days")){
         stop("You must give the 'price' as a numeric vector")
 
     # Transform into XTS
-    ticks <- xts::xts(
+    trades <- xts::xts(
         x=cbind(
             price=x[["price"]],
             size=x[["size"]],
@@ -125,17 +127,13 @@ make_bars <- function(x, type, by=c(1, "days")){
             matched_arg <- match(x=by[2], table=choices)
             if(is.na(matched_arg)) 
                 stop(gettextf("'by[2]' should be one of %s", 
-                    paste(dQuote(choices), collapse = ", ")), domain = NA)            
-
-            if(is.double(by[1]))
-                stop("The first element in the vector must be of 
-                      type 'numeric'")
+                    paste(dQuote(choices), collapse = ", ")), domain = NA)
 
             bars <- .create_bars( # create by 'by' units of time
-                X=ticks, 
-                INDEX=xts::endpoints(x=ticks, on=by[2], k=by[1])
+                X=trades, 
+                INDEX=xts::endpoints(x=trades, on=by[2], k=as.double(by[1]))
             )          
-            bars <- xts::align.time(bars, by[1])
+            bars <- xts::align.time(bars, as.double(by[1]))
 
         },
         tick={ # Tick Bars
@@ -143,6 +141,7 @@ make_bars <- function(x, type, by=c(1, "days")){
             if(!is.double(by))
                 stop("You must provide 'by' as the number of sampled ticks")
 
+            ticks <- trades # the user should ensure that ticks are supplied
             ticks_dd <- stats::aggregate(ticks$size, by=index(ticks), FUN=sum)         
             ticks_dd <- merge.xts(
                 ticks_dd[ ,1L], # aggregated volume per duplicate times
@@ -160,24 +159,24 @@ make_bars <- function(x, type, by=c(1, "days")){
                 stop("You must provide 'by' as the amount of sampled volume")
 
             # @TODO, perhaps this would be faster via a binary search tree?
-            csummed <- cumsum_reset(ticks$size, threshold=by)
+            csummed <- cumsum_reset(trades$size, threshold=by)
             eps <- which(!duplicated(names(csummed)))
             eps[1L] <- 0L
 
             # create every 'by' number of order size 
-            bars <- .create_bars(X=ticks, INDEX=eps)   
+            bars <- .create_bars(X=trades, INDEX=eps)   
         },
         unit={ # Unit(Dollar) Bars
 
             if(!is.double(by))
                 stop("You must provide 'by' as the number of sampled units")
 
-            csummed <- cumsum_reset((ticks$price*ticks$size), threshold=by)
+            csummed <- cumsum_reset((trades$price * trades$size), threshold=by)
             eps <- which(!duplicated(names(csummed)))
             eps[1L] <- 0L
 
             # create every 'by' number of units is traded
-            bars <- .create_bars(X=ticks, INDEX=eps) 
+            bars <- .create_bars(X=trades, INDEX=eps) 
         }
         # @TODO
         # CUSUM Bars
