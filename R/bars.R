@@ -3,8 +3,8 @@
 #' 'make_bars'
 #'
 #' @description 
-#' Creates financial time series 'bars' (also known as 'candlesticks') 
-#' from raw trade data. One may create either time, volume, unit, tick, 
+#' Creates financial 'bars' (also known as 'candlesticks') 
+#' from raw trade data. One may construct either time, volume, unit, tick, 
 #' tick-runs, tick-imbalance (TIBs) volume-imbalance (VIBs), 
 #' unit-imbalance (DIBs), or CUSUM-bars.
 #' 
@@ -26,9 +26,8 @@
 #' 
 #' time:       sampled every 'by' units of time; 
 #'             must be a vector of length two, and corresponding to 
-#'             [units, interval];
-#'             for example, 'by=c(1, "days")' or 'by=c(1, "sec")'; 
-#'             default is c(1, "days")
+#'             [units, interval]; for example, 'by=c(1, "days")' or 
+#'             'by=c(1, "secs")'. Default is c(1, "days")
 #' 
 #' tick:       sampled every 'by' number of ticks
 #' 
@@ -94,10 +93,10 @@ make_bars <- function(x, type, by=c(1, "days")){
         stop("You must supply 'side' as an integer 
              vector of 1L(buy) or -1L(sell)")
 
-    if(!is.numeric(x[ ,'size']))
+    if(!is.double(x[ ,'size']))
         stop("You must give the 'size' as a numeric vector")
 
-    if(!is.numeric(x[ ,'price']))
+    if(!is.double(x[ ,'price']))
         stop("You must give the 'price' as a numeric vector")
 
     # Transform into XTS
@@ -139,7 +138,7 @@ make_bars <- function(x, type, by=c(1, "days")){
                 stop(gettextf("'by[2]' should be one of %s", 
                     paste(dQuote(choices), collapse = ", ")), domain = NA)            
 
-            if(is.numeric(by[1]))
+            if(is.double(by[1]))
                 stop("The first element in the vector must be of 
                      type 'numeric'")
 
@@ -152,7 +151,7 @@ make_bars <- function(x, type, by=c(1, "days")){
         },
         tick={ # Tick Bars
 
-            if(!is.numeric(by))
+            if(!is.double(by))
                 stop("You must provide 'by' as the number of sampled ticks")
 
             ticks_dd <- stats::aggregate(ticks$size, by=index(ticks), FUN=sum)         
@@ -170,16 +169,12 @@ make_bars <- function(x, type, by=c(1, "days")){
         },
         volume={ # Volume Bars 
 
-            if(!is.numeric(by))
+            if(!is.double(by))
                 stop("You must provide 'by' as the amount of sampled volume")
 
+            # @TODO, perhaps this would be faster with a binary search tree?
             csummed <- cumsum_reset(ticks$size, threshold=by)
-
-            cbind(index(ticks), csummed)
-
-            xts(csummed, order.by=index(ticks))
-
-            eps <- which(!duplicated(names(groups)))
+            eps <- which(!duplicated(names(csummed)))
             eps[1L] <- 0L
 
             # create every 'by' number of order size 
@@ -187,16 +182,15 @@ make_bars <- function(x, type, by=c(1, "days")){
         },
         unit={ # Unit(Dollar) Bars
 
-            if(!is.numeric(by))
+            if(!is.double(by))
                 stop("You must provide 'by' as the number of sampled units")
 
-            groups <- cumsum_reset(as.numeric(ticks$price * ticks$size), threshold=by)
-            eps <- which(!duplicated(names(groups))); eps[1L] <- 0L
+            csummed <- cumsum_reset((ticks$price*ticks$size), threshold=by)
+            eps <- which(!duplicated(names(csummed)))
+            eps[1L] <- 0L
 
-            bars <- .create_bars( # create every 'by' number of units is traded
-                X=ticks, 
-                INDEX=eps
-            ) 
+            # create every 'by' number of units is traded
+            bars <- .create_bars(X=ticks, INDEX=eps) 
         }
         # TO DO
         # CUSUM Bars
